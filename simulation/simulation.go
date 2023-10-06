@@ -16,7 +16,7 @@ type Simulation struct {
 
 type participant struct {
 	strategy strategies.Strategy
-	score    int
+	score    action.Score
 }
 
 type roundHistory map[int]*round
@@ -31,9 +31,9 @@ type roundData struct {
 	// action is the action.Action taken by the participant in this round
 	action action.Action
 	// score is the score awarded for the action taken in this round
-	score int
+	score action.Score
 	// runningScore is the total score for the participant at the end of this round
-	runningScore int
+	runningScore action.Score
 }
 
 func NewSimulation(rounds int, strategy1, strategy2 strategies.Strategy) *Simulation {

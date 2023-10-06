@@ -18,6 +18,6 @@ func (d *Defector) MakeChoice(_ int) action.Action {
 	return action.Defect
 }
 
-func (d *Defector) ReceiveResult(_ int, _ int, _ action.Action) {
+func (d *Defector) ReceiveResult(_ int, _ action.Score, _ action.Action) {
 	return
 }

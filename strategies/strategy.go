@@ -9,5 +9,5 @@ type Strategy interface {
 	MakeChoice(round int) action.Action
 	// ReceiveResult sends the result of the round to the Strategy, including its score for that round and the
 	// action.Action taken by the opponent
-	ReceiveResult(round int, score int, opponentAction action.Action)
+	ReceiveResult(round int, score action.Score, opponentAction action.Action)
 }

@@ -18,6 +18,6 @@ func (c *Cooperator) MakeChoice(_ int) action.Action {
 	return action.Cooperate
 }
 
-func (c *Cooperator) ReceiveResult(_ int, _ int, _ action.Action) {
+func (c *Cooperator) ReceiveResult(_ int, _ action.Score, _ action.Action) {
 	return
 }

@@ -1,28 +1,35 @@
 package action
 
-type Action string
+type (
+	Action string
+	Score  int
+)
 
 const (
 	Defect    Action = "Defect"
 	Cooperate Action = "Cooperate"
+	Maximum   Score  = 5
+	Good      Score  = 3
+	Bad       Score  = 1
+	Minimum   Score  = 0
 )
 
-func ScoreActions(action1, action2 Action) (int, int) {
+func ScoreActions(action1, action2 Action) (Score, Score) {
 	if action1 == Cooperate {
 		if action2 == Cooperate {
 			// C, C
-			return 3, 3
+			return Good, Good
 		} else {
 			// C, D
-			return 0, 5
+			return Minimum, Maximum
 		}
 	} else {
 		if action2 == Cooperate {
 			// D, C
-			return 5, 0
+			return Maximum, Minimum
 		} else {
 			// D, D
-			return 1, 1
+			return Bad, Bad
 		}
 	}
 }
