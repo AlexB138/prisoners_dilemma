@@ -1,13 +1,16 @@
 package strategies
 
-import "github.com/AlexB138/prisoners_dilemma/action"
+import (
+	"github.com/AlexB138/prisoners_dilemma/action"
+	"github.com/AlexB138/prisoners_dilemma/round"
+)
 
 type Strategy interface {
 	// GetName returns the Strategy name
 	GetName() string
 	// MakeChoice returns the action.Action for the round
-	MakeChoice(round int) action.Action
-	// ReceiveResult sends the result of the round to the Strategy, including its score for that round and the
-	// action.Action taken by the opponent
-	ReceiveResult(round int, score action.Score, opponentAction action.Action)
+	MakeChoice(roundNum int) action.Action
+	// ReceiveResult sends the round number, an indicator of which participant the strategy is, and
+	// simulation.Round containing results back to the Strategy,
+	ReceiveResult(roundNum, participantNum int, round *round.Round)
 }

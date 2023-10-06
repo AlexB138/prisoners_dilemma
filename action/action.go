@@ -7,7 +7,7 @@ type (
 
 const (
 	Defect    Action = "Defect"
-	Cooperate Action = "Cooperate"
+	Cooperate Action = "Coop"
 	Maximum   Score  = 5
 	Good      Score  = 3
 	Bad       Score  = 1

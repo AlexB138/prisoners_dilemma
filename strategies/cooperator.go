@@ -1,6 +1,9 @@
 package strategies
 
-import "github.com/AlexB138/prisoners_dilemma/action"
+import (
+	"github.com/AlexB138/prisoners_dilemma/action"
+	"github.com/AlexB138/prisoners_dilemma/round"
+)
 
 type Cooperator struct {
 	name string
@@ -18,6 +21,6 @@ func (c *Cooperator) MakeChoice(_ int) action.Action {
 	return action.Cooperate
 }
 
-func (c *Cooperator) ReceiveResult(_ int, _ action.Score, _ action.Action) {
+func (c *Cooperator) ReceiveResult(_, _ int, _ *round.Round) {
 	return
 }

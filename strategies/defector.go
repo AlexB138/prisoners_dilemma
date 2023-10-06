@@ -1,6 +1,9 @@
 package strategies
 
-import "github.com/AlexB138/prisoners_dilemma/action"
+import (
+	"github.com/AlexB138/prisoners_dilemma/action"
+	"github.com/AlexB138/prisoners_dilemma/round"
+)
 
 type Defector struct {
 	name string
@@ -18,6 +21,6 @@ func (d *Defector) MakeChoice(_ int) action.Action {
 	return action.Defect
 }
 
-func (d *Defector) ReceiveResult(_ int, _ action.Score, _ action.Action) {
+func (d *Defector) ReceiveResult(_, _ int, _ *round.Round) {
 	return
 }
