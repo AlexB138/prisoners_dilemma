@@ -1,6 +1,6 @@
 package round
 
-import "github.com/AlexB138/prisoners_dilemma/action"
+import "github.com/AlexB138/prisoners_dilemma/internal/action"
 
 type Round struct {
 	Participant1Data Data

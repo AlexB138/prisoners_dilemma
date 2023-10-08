@@ -2,9 +2,9 @@ package simulation
 
 import (
 	"fmt"
-	"github.com/AlexB138/prisoners_dilemma/action"
-	"github.com/AlexB138/prisoners_dilemma/round"
-	"github.com/AlexB138/prisoners_dilemma/strategies"
+	"github.com/AlexB138/prisoners_dilemma/internal/action"
+	"github.com/AlexB138/prisoners_dilemma/internal/round"
+	"github.com/AlexB138/prisoners_dilemma/internal/strategies"
 )
 
 type Simulation struct {

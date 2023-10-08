@@ -1,8 +1,8 @@
 package strategies
 
 import (
-	"github.com/AlexB138/prisoners_dilemma/action"
-	"github.com/AlexB138/prisoners_dilemma/round"
+	"github.com/AlexB138/prisoners_dilemma/internal/action"
+	"github.com/AlexB138/prisoners_dilemma/internal/round"
 )
 
 type Cooperator struct {

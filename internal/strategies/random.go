@@ -1,10 +1,10 @@
 package strategies
 
 import (
+	"github.com/AlexB138/prisoners_dilemma/internal/round"
 	"math/rand"
 
-	"github.com/AlexB138/prisoners_dilemma/action"
-	"github.com/AlexB138/prisoners_dilemma/round"
+	"github.com/AlexB138/prisoners_dilemma/internal/action"
 )
 
 type Random struct {
