@@ -10,7 +10,9 @@ type Strategy interface {
 	GetName() string
 	// MakeChoice returns the action.Action for the round
 	MakeChoice(roundNum int) action.Action
-	// ReceiveResult sends the round number, an indicator of which participant the strategy is, and
-	// simulation.Round containing results back to the Strategy,
-	ReceiveResult(roundNum, participantNum int, round *round.Round)
+	// ReceiveResult sends the round number, an indicator of which participant the Strategy is, and
+	// round.Round containing results back to the Strategy
+	ReceiveResult(roundNum, participantNum int, round round.Round)
+	// Reset reinitializes a strategy. This allows it to participate in multiple events.
+	Reset()
 }

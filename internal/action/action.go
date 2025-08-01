@@ -14,6 +14,7 @@ const (
 	Minimum   Score  = 0
 )
 
+// ScoreActions returns the scores for the input actions. Score1, Score2.
 func ScoreActions(action1, action2 Action) (Score, Score) {
 	if action1 == Cooperate {
 		if action2 == Cooperate {

@@ -21,6 +21,10 @@ func (d *Defector) MakeChoice(_ int) action.Action {
 	return action.Defect
 }
 
-func (d *Defector) ReceiveResult(_, _ int, _ *round.Round) {
+func (d *Defector) ReceiveResult(_, _ int, _ round.Round) {
+	return
+}
+
+func (d *Defector) Reset() {
 	return
 }
