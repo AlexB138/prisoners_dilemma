@@ -20,7 +20,7 @@ func main() {
 			IterativeGameType: "",
 			Iterations:        1,
 			Rounds:            9,
-			SettingType:       simulation.SingleEvent,
+			Type:              simulation.SingleEvent,
 			Strategy1:         strategies.NewRandom(),
 			Strategy2:         strategies.NewTitForTat(),
 		}

@@ -32,9 +32,9 @@ func (s *Simulation) Run() {
 
 	var winner strategies.Strategy
 
-	if s.settings.SettingType == SingleEvent {
+	if s.settings.Type == SingleEvent {
 		winner = s.events[0].Winner()
-	} else if s.settings.SettingType == BestOfN {
+	} else if s.settings.Type == BestOfN {
 		winner = s.bestOfNWinner()
 	}
 

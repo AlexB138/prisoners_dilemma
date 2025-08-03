@@ -6,6 +6,6 @@ type Settings struct {
 	IterativeGameType    IterativeGameType
 	Iterations           int
 	Rounds               int
-	SettingType          Type
+	Type                 Type
 	Strategy1, Strategy2 strategies.Strategy
 }

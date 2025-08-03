@@ -51,7 +51,7 @@ func (a *App) renderStrategy2Selection() string {
 ║  Press 1-4 to select, b to go back, q to quit                ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
-`, a.strategy1.GetName())
+`, a.settings.Strategy1.GetName())
 }
 
 func (a *App) renderRoundsInput() string {
@@ -68,7 +68,7 @@ func (a *App) renderRoundsInput() string {
 ║  Use ↑/↓ to adjust, Enter to continue, b to go back          ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
-`, a.strategy1.GetName(), a.strategy2.GetName(), a.rounds)
+`, a.settings.Strategy1.GetName(), a.settings.Strategy2.GetName(), a.settings.Rounds)
 }
 
 func (a *App) renderSimTypeSelection() string {
@@ -89,7 +89,7 @@ func (a *App) renderSimTypeSelection() string {
 ║  Press 1-2 to select, b to go back, q to quit                ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
-`, a.strategy1.GetName(), a.strategy2.GetName(), a.rounds)
+`, a.settings.Strategy1.GetName(), a.settings.Strategy2.GetName(), a.settings.Rounds)
 }
 
 func (a *App) renderIterationTypeInput() string {
@@ -102,14 +102,20 @@ func (a *App) renderIterationTypeInput() string {
 ║  Strategy 1: %-45s 										   ║
 ║  Strategy 2: %-45s 										   ║
 ║  Rounds: %-3d                                                ║
-║  Sim Type: %-3d                                                ║
+║  Sim Type: %-3s                                                ║
 ║                                                              ║
 ║  Number of Events: %-3d                                      ║
 ║                                                              ║
 ║  Use ↑/↓ to adjust, Enter to continue, b to go back          ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
-`, a.strategy1.GetName(), a.strategy2.GetName(), a.rounds, a.simType)
+`,
+		a.settings.Strategy1.GetName(),
+		a.settings.Strategy2.GetName(),
+		a.settings.Rounds,
+		a.settings.Type,
+		a.settings.Iterations,
+	)
 }
 
 func (a *App) renderIterationsInput() string {
@@ -121,14 +127,20 @@ func (a *App) renderIterationsInput() string {
 ║  Strategy 1: %-45s 										   ║
 ║  Strategy 2: %-45s 										   ║
 ║  Rounds: %-3d                                                ║
-║  Sim Type: %-3d                                                ║
+║  Sim Type: %-3s                                                ║
 ║                                                              ║
 ║  Number of Events: %-3d                                      ║
 ║                                                              ║
 ║  Use ↑/↓ to adjust, Enter to continue, b to go back          ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
-`, a.strategy1.GetName(), a.strategy2.GetName(), a.rounds, a.simType)
+`,
+		a.settings.Strategy1.GetName(),
+		a.settings.Strategy2.GetName(),
+		a.settings.Rounds,
+		a.settings.Type,
+		a.settings.Iterations,
+	)
 }
 
 func (a *App) renderRunning() string {

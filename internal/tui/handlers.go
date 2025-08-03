@@ -7,23 +7,11 @@ import (
 	"github.com/AlexB138/prisoners_dilemma/internal/strategies"
 )
 
-type appState int
-
-const (
-	stateStrategy1 appState = iota
-	stateStrategy2
-	stateRounds
-	stateIterations
-	stateSimType
-	stateRunning
-	stateResults
-)
-
 type handlerFunc func(*App, tea.KeyMsg) (tea.Model, tea.Cmd)
 
 var stateToHandler = map[appState]handlerFunc{
-	stateStrategy1:  (*App).handleStrategy1Selection,
-	stateStrategy2:  (*App).handleStrategy2Selection,
+	stateStrategy1:  (*App).handleStrategySelection,
+	stateStrategy2:  (*App).handleStrategySelection,
 	stateRounds:     (*App).handleRoundsInput,
 	stateSimType:    (*App).handleSimTypeSelection,
 	stateIterations: (*App).handleIterationsInput,
@@ -31,68 +19,57 @@ var stateToHandler = map[appState]handlerFunc{
 	stateResults:    (*App).handleResultsView,
 }
 
-func (a *App) handleStrategy1Selection(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
-	switch msg.String() {
-	case "1":
-		a.strategy1 = strategies.NewCooperator()
-		a.state = stateStrategy2
-	case "2":
-		a.strategy1 = strategies.NewDefector()
-		a.state = stateStrategy2
-	case "3":
-		a.strategy1 = strategies.NewRandom()
-		a.state = stateStrategy2
-	case "4":
-		a.strategy1 = strategies.NewTitForTat()
-		a.state = stateStrategy2
-	case "q", "ctrl+c":
-		return a, tea.Quit
-	}
-	return a, nil
-}
+func (a *App) handleStrategySelection(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	var s strategies.Strategy
 
-func (a *App) handleStrategy2Selection(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 	case "1":
-		a.strategy2 = strategies.NewCooperator()
-		a.state = stateRounds
+		s = strategies.NewCooperator()
 	case "2":
-		a.strategy2 = strategies.NewDefector()
-		a.state = stateRounds
+		s = strategies.NewDefector()
 	case "3":
-		a.strategy2 = strategies.NewRandom()
-		a.state = stateRounds
+		s = strategies.NewRandom()
 	case "4":
-		a.strategy2 = strategies.NewTitForTat()
-		a.state = stateRounds
+		s = strategies.NewTitForTat()
 	case "b":
-		a.state = stateStrategy1
+		a.previousState()
 	case "q", "ctrl+c":
 		return a, tea.Quit
 	}
+
+	if a.state == stateStrategy1 {
+		a.settings.Strategy1 = s
+	} else if a.state == stateStrategy2 {
+		a.settings.Strategy2 = s
+	}
+
+	if s != nil {
+		a.nextState()
+	}
+	
 	return a, nil
 }
 
 func (a *App) handleRoundsInput(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 	case "up":
-		if a.rounds == 1 {
-			a.rounds = 5
-		} else if a.rounds < 100 {
-			a.rounds += 5
+		if a.settings.Rounds == 1 {
+			a.settings.Rounds = 5
+		} else if a.settings.Rounds < 100 {
+			a.settings.Rounds += 5
 		}
 	case "down":
-		if a.rounds > 5 {
-			a.rounds -= 5
-		} else if a.rounds == 5 {
-			a.rounds = 1
+		if a.settings.Rounds > 5 {
+			a.settings.Rounds -= 5
+		} else if a.settings.Rounds == 5 {
+			a.settings.Rounds = 1
 		}
 	case "enter":
-		a.state = stateSimType
+		a.nextState()
 	case "q", "ctrl+c":
 		return a, tea.Quit
 	case "b":
-		a.state = stateStrategy2
+		a.previousState()
 	}
 
 	return a, nil
@@ -101,15 +78,15 @@ func (a *App) handleRoundsInput(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 func (a *App) handleSimTypeSelection(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 	case "1":
-		a.simType = simulation.SingleEvent
-		a.iterations = 1
-		a.state = stateRunning
+		a.settings.Type = simulation.SingleEvent
+		a.settings.Iterations = 1
+		a.transitionTo(stateRunning)
 		return a, a.runSimulation()
 	case "2":
-		a.simType = simulation.BestOfN
-		a.state = stateIterations
+		a.settings.Type = simulation.BestOfN
+		a.transitionTo(stateIterations)
 	case "b":
-		a.state = stateRounds
+		a.previousState()
 	case "q", "ctrl+c":
 		return a, tea.Quit
 	}
@@ -119,19 +96,19 @@ func (a *App) handleSimTypeSelection(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 func (a *App) handleIterationsInput(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 	case "up":
-		if a.iterations < 99 {
-			a.iterations += 2
+		if a.settings.Iterations < 99 {
+			a.settings.Iterations += 2
 		}
 	case "down":
-		if a.iterations > 1 {
-			a.iterations -= 2
+		if a.settings.Iterations > 1 {
+			a.settings.Iterations -= 2
 		}
 	case "enter":
-		a.state = stateSimType
+		a.nextState()
 	case "q", "ctrl+c":
 		return a, tea.Quit
 	case "b":
-		a.state = stateSimType
+		a.previousState()
 	}
 
 	return a, nil
@@ -146,5 +123,10 @@ func (a *App) handleResultsView(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "q", "ctrl+c":
 		return a, tea.Quit
 	}
+	return a, nil
+}
+
+func (a *App) handlePanic(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	panic("Invalid transition specified")
 	return a, nil
 }

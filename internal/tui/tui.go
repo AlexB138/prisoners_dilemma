@@ -4,20 +4,13 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/AlexB138/prisoners_dilemma/internal/simulation"
-	"github.com/AlexB138/prisoners_dilemma/internal/strategies"
 )
 
 // App represents the main TUI application
 type App struct {
-	state         appState
-	previousState appState
-	strategy1     strategies.Strategy
-	strategy2     strategies.Strategy
-	rounds        int
-	iterations    int
-	simType       simulation.Type
-	sim           *simulation.Simulation
-	settings      *simulation.Settings
+	state    appState
+	sim      *simulation.Simulation
+	settings *simulation.Settings
 }
 
 // simulationCompleteMsg is sent when simulation completes
@@ -28,9 +21,11 @@ type simulationCompleteMsg struct {
 // NewApp creates a new TUI application
 func NewApp() *App {
 	return &App{
-		state:   stateStrategy1,
-		rounds:  10, // default
-		simType: simulation.SingleEvent,
+		state: stateStrategy1,
+		settings: &simulation.Settings{
+			Rounds:     10,
+			Iterations: 1,
+		},
 	}
 }
 
@@ -64,27 +59,18 @@ func (a *App) View() string {
 	}
 }
 
-func (a *App) runSimulation() tea.Cmd {
-	return func() tea.Msg {
-		settings := simulation.Settings{
-			IterativeGameType: "",
-			Iterations:        a.iterations,
-			Rounds:            a.rounds,
-			SettingType:       a.simType,
-			Strategy1:         a.strategy1,
-			Strategy2:         a.strategy2,
-		}
-
-		sim := simulation.NewSimulation(settings)
-		sim.Run()
-
-		return simulationCompleteMsg{sim: sim}
-	}
-}
-
 // Run starts the TUI application
 func Run() error {
 	p := tea.NewProgram(NewApp())
 	_, err := p.Run()
 	return err
+}
+
+func (a *App) runSimulation() tea.Cmd {
+	return func() tea.Msg {
+		sim := simulation.NewSimulation(*a.settings)
+		sim.Run()
+
+		return simulationCompleteMsg{sim: sim}
+	}
 }
