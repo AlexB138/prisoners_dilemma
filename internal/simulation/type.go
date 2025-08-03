@@ -10,7 +10,7 @@ const (
 type IterativeGameType string
 
 const (
-	IterativeGameTypeHighestSingleRound IterativeGameType = "Highest Single Round"
+	IterativeGameTypeHighestSingleEvent IterativeGameType = "Highest Single Event"
 	IterativeGameTypeHighestTotal       IterativeGameType = "Highest Total"
 	IterativeGameTypeBestAverageScore   IterativeGameType = "Best Average"
 	IterativeGameTypeMostWins           IterativeGameType = "Most Wins"

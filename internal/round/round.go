@@ -3,6 +3,7 @@ package round
 import "github.com/AlexB138/prisoners_dilemma/internal/action"
 
 type Round struct {
+	RoundNum         int
 	Participant1Data *Data
 	Participant2Data *Data
 }

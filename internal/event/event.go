@@ -12,7 +12,7 @@ import (
 type Event struct {
 	totalRounds  int
 	currentRound int
-	Result       round.History
+	result       round.History
 	participant1 *participant
 	participant2 *participant
 }
@@ -41,7 +41,7 @@ func NewEvent(rounds int, strategy1, strategy2 strategies.Strategy) *Event {
 	return &Event{
 		totalRounds:  rounds,
 		currentRound: 0,
-		Result:       make(round.History),
+		result:       make(round.History),
 		participant1: p1,
 		participant2: p2,
 	}
@@ -61,7 +61,7 @@ func (e *Event) Run() {
 
 		r := e.executeRound(e.currentRound)
 
-		e.Result[e.currentRound] = r
+		e.result[e.currentRound] = r
 
 		// Update scores
 		e.participant1.updateScore(r.Participant1Data)
@@ -83,6 +83,7 @@ func (e *Event) executeRound(roundNum int) *round.Round {
 	d1.Score, d2.Score = action.ScoreActions(d1.Action, d2.Action)
 
 	return &round.Round{
+		RoundNum:         roundNum,
 		Participant1Data: d1,
 		Participant2Data: d2,
 	}
@@ -105,7 +106,7 @@ func (e *Event) String() string {
 	output += "Round\tAction\tScore\tTotal\t\tAction\tScore\tTotal\n"
 
 	for i := 1; i <= e.totalRounds; i++ {
-		r := e.Result[i]
+		r := e.result[i]
 
 		p1d := r.Participant1Data
 		p2d := r.Participant2Data
@@ -118,4 +119,14 @@ func (e *Event) String() string {
 	output += fmt.Sprintf("\nFinal:\t%d\t\t\t\t%d\n", e.participant1.score, e.participant2.score)
 
 	return output
+}
+
+func (e *Event) Winner() strategies.Strategy {
+	if e.participant1.score == e.participant2.score {
+		return nil
+	} else if e.participant1.score > e.participant2.score {
+		return e.participant1.strategy
+	} else {
+		return e.participant2.strategy
+	}
 }
