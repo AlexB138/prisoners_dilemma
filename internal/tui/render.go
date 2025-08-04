@@ -1,23 +1,28 @@
 package tui
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/AlexB138/prisoners_dilemma/internal/simulation"
+)
 
 type renderFunc func(*App) string
 
 var stateToRender = map[appState]renderFunc{
-	stateStrategy1:  (*App).renderStrategy1Selection,
-	stateStrategy2:  (*App).renderStrategy2Selection,
-	stateRounds:     (*App).renderRoundsInput,
-	stateSimType:    (*App).renderSimTypeSelection,
-	stateIterations: (*App).renderIterationsInput,
-	stateRunning:    (*App).renderRunning,
-	stateResults:    (*App).renderResults,
+	stateStrategy1:     (*App).renderStrategy1Selection,
+	stateStrategy2:     (*App).renderStrategy2Selection,
+	stateRounds:        (*App).renderRoundsInput,
+	stateSimType:       (*App).renderSimTypeSelection,
+	stateIterativeType: (*App).renderIterativeTypeInput,
+	stateIterations:    (*App).renderIterationsInput,
+	stateRunning:       (*App).renderRunning,
+	stateResults:       (*App).renderResults,
 }
 
 func (a *App) renderStrategy1Selection() string {
 	return fmt.Sprintf(`
 ╔══════════════════════════════════════════════════════════════╗
-║                    Prisoner's Dilemma TUI                    ║
+║                     Prisoner's Dilemma                       ║
 ╠══════════════════════════════════════════════════════════════╣
 ║                                                              ║
 ║  Select Strategy 1:                                          ║
@@ -36,10 +41,10 @@ func (a *App) renderStrategy1Selection() string {
 func (a *App) renderStrategy2Selection() string {
 	return fmt.Sprintf(`
 ╔══════════════════════════════════════════════════════════════╗
-║                    Prisoner's Dilemma TUI                    ║
+║                     Prisoner's Dilemma                       ║
 ╠══════════════════════════════════════════════════════════════╣
 ║                                                              ║
-║  Strategy 1: %-45s 										   ║
+║  Strategy 1: %-15s 							       ║
 ║                                                              ║
 ║  Select Strategy 2:                                          ║
 ║                                                              ║
@@ -57,13 +62,13 @@ func (a *App) renderStrategy2Selection() string {
 func (a *App) renderRoundsInput() string {
 	return fmt.Sprintf(`
 ╔══════════════════════════════════════════════════════════════╗
-║                    Prisoner's Dilemma TUI                    ║
+║                     Prisoner's Dilemma                       ║
 ╠══════════════════════════════════════════════════════════════╣
 ║                                                              ║
 ║  Strategy 1: %-45s 										   ║
 ║  Strategy 2: %-45s 										   ║
 ║                                                              ║
-║  Number of Rounds: %-3d                                      ║
+║  Number of Rounds: %-4d                                      ║
 ║                                                              ║
 ║  Use ↑/↓ to adjust, Enter to continue, b to go back          ║
 ║                                                              ║
@@ -74,12 +79,12 @@ func (a *App) renderRoundsInput() string {
 func (a *App) renderSimTypeSelection() string {
 	return fmt.Sprintf(`
 ╔══════════════════════════════════════════════════════════════╗
-║                    Prisoner's Dilemma TUI                    ║
+║                     Prisoner's Dilemma                       ║
 ╠══════════════════════════════════════════════════════════════╣
 ║                                                              ║
 ║  Strategy 1: %-45s 										   ║
 ║  Strategy 2: %-45s 										   ║
-║  Rounds: %-3d                                                ║
+║  Rounds: %-4d                                                ║
 ║                                                              ║
 ║  Simulation Type:                                            ║
 ║                                                              ║
@@ -92,21 +97,25 @@ func (a *App) renderSimTypeSelection() string {
 `, a.settings.Strategy1.GetName(), a.settings.Strategy2.GetName(), a.settings.Rounds)
 }
 
-func (a *App) renderIterationTypeInput() string {
-	// TODO: Continue here
+func (a *App) renderIterativeTypeInput() string {
 	return fmt.Sprintf(`
 ╔══════════════════════════════════════════════════════════════╗
-║                    Prisoner's Dilemma TUI                    ║
+║                     Prisoner's Dilemma                       ║
 ╠══════════════════════════════════════════════════════════════╣
 ║                                                              ║
 ║  Strategy 1: %-45s 										   ║
 ║  Strategy 2: %-45s 										   ║
 ║  Rounds: %-3d                                                ║
-║  Sim Type: %-3s                                                ║
+║  Sim Type: %-3s                                              ║
 ║                                                              ║
-║  Number of Events: %-3d                                      ║
+║  Select Iterative Scoring Method:                            ║
 ║                                                              ║
-║  Use ↑/↓ to adjust, Enter to continue, b to go back          ║
+║  1. %-20s                                                    ║
+║  2. %-45s 										           ║
+║  3. %-45s 										           ║
+║  4. %-45s 										           ║
+║                                                              ║
+║  Press 1-4 to select, b to go back, q to quit                ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
 `,
@@ -114,14 +123,17 @@ func (a *App) renderIterationTypeInput() string {
 		a.settings.Strategy2.GetName(),
 		a.settings.Rounds,
 		a.settings.Type,
-		a.settings.Iterations,
+		simulation.IterativeGameTypeMostWins,
+		simulation.IterativeGameTypeHighestTotal,
+		simulation.IterativeGameTypeHighestSingleEvent,
+		simulation.IterativeGameTypeBestAverageScore,
 	)
 }
 
 func (a *App) renderIterationsInput() string {
 	return fmt.Sprintf(`
 ╔══════════════════════════════════════════════════════════════╗
-║                    Prisoner's Dilemma TUI                    ║
+║                     Prisoner's Dilemma                       ║
 ╠══════════════════════════════════════════════════════════════╣
 ║                                                              ║
 ║  Strategy 1: %-45s 										   ║
@@ -146,7 +158,7 @@ func (a *App) renderIterationsInput() string {
 func (a *App) renderRunning() string {
 	return `
 ╔══════════════════════════════════════════════════════════════╗
-║                    Prisoner's Dilemma TUI                    ║
+║                     Prisoner's Dilemma                       ║
 ╠══════════════════════════════════════════════════════════════╣
 ║                                                              ║
 ║                        Running Simulation...                 ║
@@ -175,20 +187,32 @@ func (a *App) renderResults() string {
 
 	result := fmt.Sprintf(`
 ╔══════════════════════════════════════════════════════════════╗
-║                    Prisoner's Dilemma TUI                    ║
+║                     Prisoner's Dilemma                       ║
 ╠══════════════════════════════════════════════════════════════╣
 ║                                                              ║
+║  Settings:                                                   ║
+║      Rounds: %-3d                                             ║
+║      Type:   %-15s                                 ║
+║                                                              ║
+║                                                              ║
 ║  Results:                                                    ║
+║      %-12s: %-4d points                               ║
+║      %-12s: %-4d points                               ║
 ║                                                              ║
-║  %s: %d points                                               ║
-║  %s: %d points                                               ║
-║                                                              ║
-║  Winner: %s                                                  ║
+║      Winner: %-15s                                 ║
 ║                                                              ║
 ║  Press 'r' to run again, 'q' to quit                         ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
-`, name1, score1, name2, score2, w)
+`,
+		a.settings.Rounds,
+		a.settings.Type,
+		name1,
+		score1,
+		name2,
+		score2,
+		w,
+	)
 
 	return result
 }

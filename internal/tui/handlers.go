@@ -10,13 +10,14 @@ import (
 type handlerFunc func(*App, tea.KeyMsg) (tea.Model, tea.Cmd)
 
 var stateToHandler = map[appState]handlerFunc{
-	stateStrategy1:  (*App).handleStrategySelection,
-	stateStrategy2:  (*App).handleStrategySelection,
-	stateRounds:     (*App).handleRoundsInput,
-	stateSimType:    (*App).handleSimTypeSelection,
-	stateIterations: (*App).handleIterationsInput,
-	stateRunning:    (*App).handleResultsView,
-	stateResults:    (*App).handleResultsView,
+	stateStrategy1:     (*App).handleStrategySelection,
+	stateStrategy2:     (*App).handleStrategySelection,
+	stateRounds:        (*App).handleRoundsInput,
+	stateSimType:       (*App).handleSimTypeSelection,
+	stateIterativeType: (*App).handleIterativeTypeSelection,
+	stateIterations:    (*App).handleIterationsInput,
+	stateRunning:       (*App).handleResultsView,
+	stateResults:       (*App).handleResultsView,
 }
 
 func (a *App) handleStrategySelection(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
@@ -46,7 +47,7 @@ func (a *App) handleStrategySelection(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	if s != nil {
 		a.nextState()
 	}
-	
+
 	return a, nil
 }
 
@@ -84,12 +85,32 @@ func (a *App) handleSimTypeSelection(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return a, a.runSimulation()
 	case "2":
 		a.settings.Type = simulation.BestOfN
-		a.transitionTo(stateIterations)
+		a.transitionTo(stateIterativeType)
 	case "b":
 		a.previousState()
 	case "q", "ctrl+c":
 		return a, tea.Quit
 	}
+	return a, nil
+}
+
+func (a *App) handleIterativeTypeSelection(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	switch msg.String() {
+	case "1":
+		a.settings.IterativeGameType = simulation.IterativeGameTypeMostWins
+	case "2":
+		a.settings.IterativeGameType = simulation.IterativeGameTypeHighestTotal
+	case "3":
+		a.settings.IterativeGameType = simulation.IterativeGameTypeHighestSingleEvent
+	case "4":
+		a.settings.IterativeGameType = simulation.IterativeGameTypeBestAverageScore
+	case "b":
+		a.previousState()
+	case "q", "ctrl+c":
+		return a, tea.Quit
+	}
+
+	a.nextState()
 	return a, nil
 }
 

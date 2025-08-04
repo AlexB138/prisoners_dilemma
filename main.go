@@ -9,6 +9,15 @@ import (
 	"github.com/AlexB138/prisoners_dilemma/internal/tui"
 )
 
+/*
+TODO:
+- Add iteration type selection for TUI
+- Improve result viewer for TUI
+- Create random ecosystem encounters with global "win"
+- Add more strategies
+- Add detailed result view
+*/
+
 func main() {
 
 	if len(os.Args) > 1 && os.Args[1] == "--tui" {
