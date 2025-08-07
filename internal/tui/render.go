@@ -150,38 +150,95 @@ func (a *App) renderResults() string {
 		return boxStyle.Render("No sim available")
 	}
 
-	name1, name2 := a.sim.GetParticipantNames()
-	score1, score2 := a.sim.GetFinalScores()
-	winner := a.sim.GetWinner()
+	winner := a.sim.Winner()
 
-	var w string
-	if winner == nil {
-		w = "Tie!"
-	} else {
-		w = winner.GetName()
+	header := fmt.Sprintf(`
+Settings:
+  Rounds    : %d
+  Type      : %s`, a.settings.Rounds, a.settings.Type)
+
+	var iterativeDetails string
+	if a.settings.Type == simulation.BestOfN {
+		iterativeDetails = fmt.Sprintf(`
+  Iterations: %d
+  Scoring   : %s`, a.settings.Iterations, a.settings.IterativeGameType)
 	}
 
-	content := fmt.Sprintf(`
-Settings:
-  Rounds: %d
-  Type:   %s
+	results := a.renderResultsBlock()
 
-Results:
-  %s: %d points
-  %s: %d points
+	var winnerText string
+	if winner == nil {
+		winnerText = "Tie!"
+	} else {
+		winnerText = winner.GetName()
+	}
+	footer := fmt.Sprintf(`
 
   Winner: %s
 
-Press 'r' to run again, 'q' to quit
-`,
-		a.settings.Rounds,
-		a.settings.Type,
-		name1,
-		score1,
-		name2,
-		score2,
-		w,
-	)
+Press 'r' to run again, 'q' to quit`, winnerText)
+
+	// Combine all sections
+	content := header + iterativeDetails + results + footer
 
 	return boxStyle.Render(content)
+}
+
+func (a *App) renderResultsBlock() string {
+	name1, name2 := a.sim.ParticipantNames()
+	var s1, s2 string
+
+	if a.settings.Type == simulation.SingleEvent {
+		s1, s2 = a.renderSingleEventScore()
+	} else {
+		switch a.settings.IterativeGameType {
+		case simulation.IterativeGameTypeHighestSingleEvent:
+			s1, s2 = a.renderHighestSingleEventScore()
+
+		case simulation.IterativeGameTypeHighestTotal:
+			s1, s2 = a.renderHighestTotalScore()
+
+		case simulation.IterativeGameTypeBestAverageScore:
+			s1, s2 = a.renderBestAverageScore()
+
+		case simulation.IterativeGameTypeMostWins:
+			s1, s2 = a.renderMostWinsScore()
+		}
+	}
+
+	l := len(name1)
+	if len(name2) > len(name1) {
+		l = len(name2)
+	}
+
+	return fmt.Sprintf(`
+
+Results:
+  %-*s: %s
+  %-*s: %s`, l, name1, s1, l, name2, s2)
+}
+
+func (a *App) renderSingleEventScore() (string, string) {
+	score1, score2 := a.sim.SingleEventScore()
+	return fmt.Sprintf("%d points", score1), fmt.Sprintf("%d points", score2)
+}
+
+func (a *App) renderHighestSingleEventScore() (string, string) {
+	highScore1, highScore2 := a.sim.HighestSingleEventScore()
+	return fmt.Sprintf("%d high score", highScore1), fmt.Sprintf("%d high score", highScore2)
+}
+
+func (a *App) renderHighestTotalScore() (string, string) {
+	total1, total2 := a.sim.HighestTotalScore()
+	return fmt.Sprintf("%d total score", total1), fmt.Sprintf("%d total score", total2)
+}
+
+func (a *App) renderBestAverageScore() (string, string) {
+	avg1, avg2 := a.sim.BestAverageScore()
+	return fmt.Sprintf("%.2f average score", avg1), fmt.Sprintf("%.2f average score", avg2)
+}
+
+func (a *App) renderMostWinsScore() (string, string) {
+	wins1, wins2 := a.sim.MostWinsScore()
+	return fmt.Sprintf("%d wins", wins1), fmt.Sprintf("%d wins", wins2)
 }

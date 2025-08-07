@@ -1,7 +1,6 @@
 package simulation
 
 import (
-	"github.com/AlexB138/prisoners_dilemma/internal/action"
 	"github.com/AlexB138/prisoners_dilemma/internal/event"
 	"github.com/AlexB138/prisoners_dilemma/internal/strategies"
 )
@@ -30,15 +29,7 @@ func (s *Simulation) Run() {
 		s.events = append(s.events, *e)
 	}
 
-	var winner strategies.Strategy
-
-	if s.settings.Type == SingleEvent {
-		winner = s.events[0].Winner()
-	} else if s.settings.Type == BestOfN {
-		winner = s.bestOfNWinner()
-	}
-
-	s.winner = winner
+	s.Winner()
 }
 
 func (s *Simulation) resetStrategies() {
@@ -46,16 +37,12 @@ func (s *Simulation) resetStrategies() {
 	s.settings.Strategy2.Reset()
 }
 
-// GetEvents returns all events in the simulation
-func (s *Simulation) GetEvents() []event.Event {
+// Events returns all events in the simulation
+func (s *Simulation) Events() []event.Event {
 	return s.events
 }
 
-func (s *Simulation) GetFinalScores() (action.Score, action.Score) {
-	return s.events[len(s.events)-1].GetScore()
-}
-
-func (s *Simulation) GetParticipantNames() (string, string) {
+func (s *Simulation) ParticipantNames() (string, string) {
 	var n1, n2 string
 
 	if s.settings.Strategy1 != nil {
@@ -69,8 +56,18 @@ func (s *Simulation) GetParticipantNames() (string, string) {
 	return n1, n2
 }
 
-// GetWinner returns the winner of the simulation, nil after running indicates a tie
-func (s *Simulation) GetWinner() strategies.Strategy {
+// Winner returns the winner of the simulation, nil after running indicates a tie
+func (s *Simulation) Winner() strategies.Strategy {
+	if s.winner != nil {
+		return s.winner
+	}
+
+	if s.settings.Type == SingleEvent {
+		s.winner = s.events[0].Winner()
+	} else if s.settings.Type == BestOfN {
+		s.winner = s.bestOfNWinner()
+	}
+
 	return s.winner
 }
 

@@ -16,7 +16,7 @@ var stateToHandler = map[appState]handlerFunc{
 	stateSimType:       (*App).handleSimTypeSelection,
 	stateIterativeType: (*App).handleIterativeTypeSelection,
 	stateIterations:    (*App).handleIterationsInput,
-	stateRunning:       (*App).handleResultsView,
+	stateRunning:       (*App).handleRunningView,
 	stateResults:       (*App).handleResultsView,
 }
 
@@ -125,7 +125,8 @@ func (a *App) handleIterationsInput(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			a.settings.Iterations -= 2
 		}
 	case "enter":
-		a.nextState()
+		a.transitionTo(stateRunning)
+		return a, a.runSimulation()
 	case "q", "ctrl+c":
 		return a, tea.Quit
 	case "b":
@@ -141,6 +142,14 @@ func (a *App) handleResultsView(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		a.sim.Reset()
 		a.state = stateRunning
 		return a, a.runSimulation()
+	case "q", "ctrl+c":
+		return a, tea.Quit
+	}
+	return a, nil
+}
+
+func (a *App) handleRunningView(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	switch msg.String() {
 	case "q", "ctrl+c":
 		return a, tea.Quit
 	}

@@ -11,11 +11,10 @@ import (
 
 /*
 TODO:
-- Add iteration type selection for TUI
-- Improve result viewer for TUI
 - Create random ecosystem encounters with global "win"
 - Add more strategies
 - Add detailed result view
+- Make TUI full screen using alternate screen buffer
 */
 
 func main() {
@@ -36,15 +35,15 @@ func main() {
 
 		sim := simulation.NewSimulation(s)
 		sim.Run()
-		score1, score2 := sim.GetFinalScores()
-		w := sim.GetWinner()
+		score1, score2 := sim.SingleEventScore()
+		w := sim.Winner()
 
 		if w == nil {
 			log.Println("Tie! Score:", score1, " - ", score2)
 			return
 		}
 
-		log.Println(sim.GetWinner().GetName(), "won! Score:", score1, " - ", score2)
+		log.Println(sim.Winner().GetName(), "won! Score:", score1, " - ", score2)
 	}
 
 }

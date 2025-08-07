@@ -18,15 +18,17 @@ type transition struct {
 	prev appState
 }
 
+// stateTransitions tracks the previous and next states of each state. states without values either don't transition
+// or are handled in their handler logic
 var stateTransitions = map[appState]transition{
 	stateStrategy1:     {next: stateStrategy2},
 	stateStrategy2:     {prev: stateStrategy1, next: stateRounds},
 	stateRounds:        {prev: stateStrategy2, next: stateSimType},
-	stateSimType:       {prev: stateRounds}, // intentionally no next, controlled by handler
+	stateSimType:       {prev: stateRounds},
 	stateIterativeType: {prev: stateSimType, next: stateIterations},
-	stateIterations:    {prev: stateIterativeType, next: stateRunning},
-	stateRunning:       {prev: stateSimType}, // intentionally no next
-	stateResults:       {prev: stateSimType}, // intentionally no next
+	stateIterations:    {prev: stateIterativeType},
+	stateRunning:       {prev: stateSimType},
+	stateResults:       {prev: stateSimType},
 }
 
 func (a *App) transitionTo(newState appState) {
