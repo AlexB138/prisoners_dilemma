@@ -21,6 +21,10 @@ func (c *Cooperator) MakeChoice(_ int) action.Action {
 	return action.Cooperate
 }
 
-func (c *Cooperator) ReceiveResult(_, _ int, _ *round.Round) {
+func (c *Cooperator) ReceiveResult(_, _ int, _ round.Round) {
+	return
+}
+
+func (c *Cooperator) Reset() {
 	return
 }

@@ -1,10 +1,10 @@
 package strategies
 
 import (
-	"github.com/AlexB138/prisoners_dilemma/internal/round"
 	"math/rand"
 
 	"github.com/AlexB138/prisoners_dilemma/internal/action"
+	"github.com/AlexB138/prisoners_dilemma/internal/round"
 )
 
 type Random struct {
@@ -27,6 +27,10 @@ func (d *Random) MakeChoice(_ int) action.Action {
 	}
 }
 
-func (d *Random) ReceiveResult(_, _ int, _ *round.Round) {
+func (d *Random) ReceiveResult(_, _ int, _ round.Round) {
+	return
+}
+
+func (d *Random) Reset() {
 	return
 }

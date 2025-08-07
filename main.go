@@ -1,24 +1,49 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"os"
+
 	"github.com/AlexB138/prisoners_dilemma/internal/simulation"
-	strategies2 "github.com/AlexB138/prisoners_dilemma/internal/strategies"
+	"github.com/AlexB138/prisoners_dilemma/internal/strategies"
+	"github.com/AlexB138/prisoners_dilemma/internal/tui"
 )
 
 /*
-TODO: Add CLI interface for selecting strategies
-TODO: Create environment for multiple strategies to compete
+TODO:
+- Create random ecosystem encounters with global "win"
+- Add more strategies
+- Add detailed result view
+- Make TUI full screen using alternate screen buffer
 */
 
 func main() {
-	//s1 := strategies.NewDefector()
-	//s2 := strategies.NewCooperator()
-	s1 := strategies2.NewRandom()
-	s2 := strategies2.NewTitForTat()
 
-	sim := simulation.NewSimulation(15, s1, s2)
-	sim.Run()
+	if len(os.Args) > 1 && os.Args[1] == "--tui" {
+		if err := tui.Run(); err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		s := simulation.Settings{
+			IterativeGameType: "",
+			Iterations:        1,
+			Rounds:            9,
+			Type:              simulation.SingleEvent,
+			Strategy1:         strategies.NewRandom(),
+			Strategy2:         strategies.NewTitForTat(),
+		}
 
-	fmt.Println(sim)
+		sim := simulation.NewSimulation(s)
+		sim.Run()
+		score1, score2 := sim.SingleEventScore()
+		w := sim.Winner()
+
+		if w == nil {
+			log.Println("Tie! Score:", score1, " - ", score2)
+			return
+		}
+
+		log.Println(sim.Winner().GetName(), "won! Score:", score1, " - ", score2)
+	}
+
 }

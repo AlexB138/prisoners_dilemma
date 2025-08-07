@@ -23,7 +23,7 @@ func (c *TitForTat) MakeChoice(roundNum int) action.Action {
 	opPreviousAction, ok := c.getOpponentsPreviousMove(roundNum)
 	if !ok {
 		// If no previous opponent action is present, cooperate.
-		// This always happens on the first round.
+		// This always happens the first round.
 		return action.Cooperate
 	}
 
@@ -31,7 +31,7 @@ func (c *TitForTat) MakeChoice(roundNum int) action.Action {
 	return opPreviousAction
 }
 
-func (c *TitForTat) ReceiveResult(roundNum, participantNum int, r *round.Round) {
+func (c *TitForTat) ReceiveResult(roundNum, participantNum int, r round.Round) {
 	if c == nil {
 		return
 	}
@@ -44,7 +44,11 @@ func (c *TitForTat) ReceiveResult(roundNum, participantNum int, r *round.Round) 
 		c.participantNum = participantNum
 	}
 
-	c.history[roundNum] = r
+	c.history[roundNum] = &r
+}
+
+func (c *TitForTat) Reset() {
+	c.history = make(round.History)
 }
 
 func (c *TitForTat) getOpponentsPreviousMove(roundNum int) (action.Action, bool) {

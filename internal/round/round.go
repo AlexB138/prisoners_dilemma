@@ -3,11 +3,12 @@ package round
 import "github.com/AlexB138/prisoners_dilemma/internal/action"
 
 type Round struct {
-	Participant1Data Data
-	Participant2Data Data
+	RoundNum         int
+	Participant1Data *Data
+	Participant2Data *Data
 }
 
-// Data stores information about given Round for a single participant
+// Data stores information about a given Round for a single participant
 type Data struct {
 	// Action is the action.Action taken by the participant in this Round
 	Action action.Action
