@@ -15,12 +15,16 @@ func NewTitForTat() Strategy {
 	return &TitForTat{name: "TitForTat"}
 }
 
-func (c *TitForTat) GetName() string {
-	return c.name
+func (t *TitForTat) Description() string {
+	return "Cooperates on the first round and imitates its opponent's previous move thereafter."
 }
 
-func (c *TitForTat) MakeChoice(roundNum int) action.Action {
-	opPreviousAction, ok := c.getOpponentsPreviousMove(roundNum)
+func (t *TitForTat) Name() string {
+	return t.name
+}
+
+func (t *TitForTat) MakeChoice(roundNum int) action.Action {
+	opPreviousAction, ok := t.getOpponentsPreviousMove(roundNum)
 	if !ok {
 		// If no previous opponent action is present, cooperate.
 		// This always happens the first round.
@@ -31,34 +35,34 @@ func (c *TitForTat) MakeChoice(roundNum int) action.Action {
 	return opPreviousAction
 }
 
-func (c *TitForTat) ReceiveResult(roundNum, participantNum int, r round.Round) {
-	if c == nil {
+func (t *TitForTat) ReceiveResult(roundNum, participantNum int, r round.Round) {
+	if t == nil {
 		return
 	}
 
-	if c.history == nil {
-		c.history = make(round.History)
+	if t.history == nil {
+		t.history = make(round.History)
 	}
 
-	if c.participantNum == 0 {
-		c.participantNum = participantNum
+	if t.participantNum == 0 {
+		t.participantNum = participantNum
 	}
 
-	c.history[roundNum] = &r
+	t.history[roundNum] = &r
 }
 
-func (c *TitForTat) Reset() {
-	c.history = make(round.History)
+func (t *TitForTat) Reset() {
+	t.history = make(round.History)
 }
 
-func (c *TitForTat) getOpponentsPreviousMove(roundNum int) (action.Action, bool) {
-	if c == nil || c.history == nil {
+func (t *TitForTat) getOpponentsPreviousMove(roundNum int) (action.Action, bool) {
+	if t == nil || t.history == nil {
 		return action.Cooperate, false
 	}
 
-	if r, ok := c.history[roundNum-1]; ok {
+	if r, ok := t.history[roundNum-1]; ok {
 		opponentData := r.Participant1Data
-		if c.participantNum == 1 {
+		if t.participantNum == 1 {
 			opponentData = r.Participant2Data
 		}
 

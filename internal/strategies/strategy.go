@@ -6,8 +6,10 @@ import (
 )
 
 type Strategy interface {
-	// GetName returns the Strategy name
-	GetName() string
+	// Description returns a description of the strategy. Used for Help text.
+	Description() string
+	// Name returns the Strategy name
+	Name() string
 	// MakeChoice returns the action.Action for the round
 	MakeChoice(roundNum int) action.Action
 	// ReceiveResult sends the round number, an indicator of which participant the Strategy is, and

@@ -13,6 +13,8 @@ import (
 TODO:
 - Create random ecosystem encounters with global "win"
 - Add more strategies
+- Update renderer to auto discover strategies
+- Update tui with help entries
 - Add detailed result view
 - Make TUI full screen using alternate screen buffer
 */
@@ -43,7 +45,7 @@ func main() {
 			return
 		}
 
-		log.Println(sim.Winner().GetName(), "won! Score:", score1, " - ", score2)
+		log.Println(sim.Winner().Name(), "won! Score:", score1, " - ", score2)
 	}
 
 }

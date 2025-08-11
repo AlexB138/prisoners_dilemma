@@ -54,7 +54,7 @@ Select Strategy 2:
   4. Tit for Tat (Copy Opponent's Last Move)
 
 Press 1-4 to select, b to go back, q to quit
-`, a.settings.Strategy1.GetName())
+`, a.settings.Strategy1.Name())
 	return boxStyle.Render(content)
 }
 
@@ -66,7 +66,7 @@ Strategy 2: %s
 Number of Rounds: %d
 
 Use ↑/↓ to adjust, Enter to continue, b to go back
-`, a.settings.Strategy1.GetName(), a.settings.Strategy2.GetName(), a.settings.Rounds)
+`, a.settings.Strategy1.Name(), a.settings.Strategy2.Name(), a.settings.Rounds)
 	return boxStyle.Render(content)
 }
 
@@ -82,7 +82,7 @@ Simulation Type:
   2. Best of N (Multiple matches, best wins)
 
 Press 1-2 to select, b to go back, q to quit
-`, a.settings.Strategy1.GetName(), a.settings.Strategy2.GetName(), a.settings.Rounds)
+`, a.settings.Strategy1.Name(), a.settings.Strategy2.Name(), a.settings.Rounds)
 	return boxStyle.Render(content)
 }
 
@@ -102,8 +102,8 @@ Select Iterative Scoring Method:
 
 Press 1-4 to select, b to go back, q to quit
 `,
-		a.settings.Strategy1.GetName(),
-		a.settings.Strategy2.GetName(),
+		a.settings.Strategy1.Name(),
+		a.settings.Strategy2.Name(),
 		a.settings.Rounds,
 		a.settings.Type,
 		simulation.IterativeGameTypeMostWins,
@@ -125,8 +125,8 @@ Number of Events: %d
 
 Use ↑/↓ to adjust, Enter to continue, b to go back
 `,
-		a.settings.Strategy1.GetName(),
-		a.settings.Strategy2.GetName(),
+		a.settings.Strategy1.Name(),
+		a.settings.Strategy2.Name(),
 		a.settings.Rounds,
 		a.settings.Type,
 		a.settings.Iterations,
@@ -170,7 +170,7 @@ Settings:
 	if winner == nil {
 		winnerText = "Tie!"
 	} else {
-		winnerText = winner.GetName()
+		winnerText = winner.Name()
 	}
 	footer := fmt.Sprintf(`
 

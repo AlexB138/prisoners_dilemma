@@ -15,11 +15,15 @@ func NewRandom() Strategy {
 	return &Random{name: "Random"}
 }
 
-func (d *Random) GetName() string {
-	return d.name
+func (r *Random) Description() string {
+	return "Randomly cooperates or defects with equal likelihood."
 }
 
-func (d *Random) MakeChoice(_ int) action.Action {
+func (r *Random) Name() string {
+	return r.name
+}
+
+func (r *Random) MakeChoice(_ int) action.Action {
 	if rand.Int()%2 == 0 {
 		return action.Cooperate
 	} else {
@@ -27,10 +31,10 @@ func (d *Random) MakeChoice(_ int) action.Action {
 	}
 }
 
-func (d *Random) ReceiveResult(_, _ int, _ round.Round) {
+func (r *Random) ReceiveResult(_, _ int, _ round.Round) {
 	return
 }
 
-func (d *Random) Reset() {
+func (r *Random) Reset() {
 	return
 }
