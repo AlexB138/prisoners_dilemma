@@ -11,6 +11,8 @@ type Random struct {
 	name string
 }
 
+func init() { Register(NewRandom) }
+
 func NewRandom() Strategy {
 	return &Random{name: "Random"}
 }
@@ -31,10 +33,6 @@ func (r *Random) MakeChoice(_ int) action.Action {
 	}
 }
 
-func (r *Random) ReceiveResult(_, _ int, _ round.Round) {
-	return
-}
+func (r *Random) ReceiveResult(_, _ int, _ round.Round) {}
 
-func (r *Random) Reset() {
-	return
-}
+func (r *Random) Reset() {}

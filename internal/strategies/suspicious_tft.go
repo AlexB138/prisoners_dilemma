@@ -5,39 +5,39 @@ import (
 	"github.com/AlexB138/prisoners_dilemma/internal/round"
 )
 
-type TitForTat struct {
+type SuspiciousTitForTat struct {
 	history        round.History
 	name           string
 	participantNum int
 }
 
-func init() { Register(NewTitForTat) }
+func init() { Register(NewSuspiciousTitForTat) }
 
-func NewTitForTat() Strategy {
-	return &TitForTat{name: "TitForTat"}
+func NewSuspiciousTitForTat() Strategy {
+	return &SuspiciousTitForTat{name: "SuspiciousTitForTat"}
 }
 
-func (t *TitForTat) Description() string {
-	return "Cooperates on the first round and imitates its opponent's previous move thereafter."
+func (t *SuspiciousTitForTat) Description() string {
+	return "Defect on the first round and imitates its opponent's previous move thereafter."
 }
 
-func (t *TitForTat) Name() string {
+func (t *SuspiciousTitForTat) Name() string {
 	return t.name
 }
 
-func (t *TitForTat) MakeChoice(roundNum int) action.Action {
+func (t *SuspiciousTitForTat) MakeChoice(roundNum int) action.Action {
 	opPreviousAction, ok := t.getOpponentsPreviousMove(roundNum)
 	if !ok {
-		// If no previous opponent action is present, cooperate.
-		// This always happens the first round.
-		return action.Cooperate
+		// If no previous opponent action is present, defect.
+		// This always happens in the first round.
+		return action.Defect
 	}
 
 	// If they previously defected, defect. Vice versa.
 	return opPreviousAction
 }
 
-func (t *TitForTat) ReceiveResult(roundNum, participantNum int, r round.Round) {
+func (t *SuspiciousTitForTat) ReceiveResult(roundNum, participantNum int, r round.Round) {
 	if t == nil {
 		return
 	}
@@ -53,13 +53,13 @@ func (t *TitForTat) ReceiveResult(roundNum, participantNum int, r round.Round) {
 	t.history[roundNum] = &r
 }
 
-func (t *TitForTat) Reset() {
+func (t *SuspiciousTitForTat) Reset() {
 	t.history = make(round.History)
 }
 
-func (t *TitForTat) getOpponentsPreviousMove(roundNum int) (action.Action, bool) {
+func (t *SuspiciousTitForTat) getOpponentsPreviousMove(roundNum int) (action.Action, bool) {
 	if t == nil || t.history == nil {
-		return action.Cooperate, false
+		return action.Defect, false
 	}
 
 	if r, ok := t.history[roundNum-1]; ok {
@@ -70,6 +70,6 @@ func (t *TitForTat) getOpponentsPreviousMove(roundNum int) (action.Action, bool)
 
 		return opponentData.Action, true
 	} else {
-		return action.Cooperate, false
+		return action.Defect, false
 	}
 }

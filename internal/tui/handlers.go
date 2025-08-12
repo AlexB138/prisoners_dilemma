@@ -22,6 +22,7 @@ var stateToHandler = map[appState]handlerFunc{
 
 func (a *App) handleStrategySelection(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	var s strategies.Strategy
+	optionCount := strategies.Count()
 
 	switch msg.String() {
 	case "h", "?":
@@ -34,18 +35,22 @@ func (a *App) handleStrategySelection(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		}
 	case "down":
 		if a.helpOpen {
-			if a.helpIndex < 4 {
+			if a.helpIndex < optionCount {
 				a.helpIndex++
 			}
 		}
-	case "1":
-		s = strategies.NewCooperator()
-	case "2":
-		s = strategies.NewDefector()
-	case "3":
-		s = strategies.NewRandom()
-	case "4":
-		s = strategies.NewTitForTat()
+	case "1", "2", "3", "4", "5", "6", "7", "8", "9":
+		idx := int(msg.Runes[0] - '1')
+		if idx >= 0 && idx < optionCount {
+			s = strategies.NewByIndex(idx)
+		}
+	case "enter":
+		if a.helpOpen {
+			idx := a.helpIndex - 1
+			if idx >= 0 && idx < optionCount {
+				s = strategies.NewByIndex(idx)
+			}
+		}
 	case "b":
 		a.previousState()
 	case "q", "ctrl+c":
@@ -206,5 +211,4 @@ func (a *App) handleRunningView(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 func (a *App) handlePanic(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	panic("Invalid transition specified")
-	return a, nil
 }

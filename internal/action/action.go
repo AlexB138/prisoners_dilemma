@@ -15,6 +15,11 @@ const (
 )
 
 // ScoreActions returns the scores for the input actions. Score1, Score2.
+//
+//	action.Maximum - you defect, opponent cooperates — best personal payoff
+//	action.Good - mutual cooperation — good but not maximal payoff
+//	action.Bad - mutual defection — worse than cooperation
+//	action.Minimum - you cooperate, opponent defects — worst for you
 func ScoreActions(action1, action2 Action) (Score, Score) {
 	if action1 == Cooperate {
 		if action2 == Cooperate {
