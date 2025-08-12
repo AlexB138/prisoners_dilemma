@@ -13,7 +13,6 @@ import (
 TODO:
 - Create random ecosystem encounters with global "win"
 - Add more strategies
-- Update renderer to auto discover strategies
 - Add detailed result view
 - Make TUI full screen using alternate screen buffer
 - Add Strategy Number to Winner text

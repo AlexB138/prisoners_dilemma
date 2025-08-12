@@ -260,12 +260,7 @@ func renderIterativeTypeHelp(a *App) string {
 }
 
 func (a *App) renderStrategySelectionContent(title string, includeBack bool) string {
-	options := []strategies.Strategy{
-		strategies.NewCooperator(),
-		strategies.NewDefector(),
-		strategies.NewRandom(),
-		strategies.NewTitForTat(),
-	}
+	options := strategies.Discover()
 
 	list := title + "\n\n"
 	for i, s := range options {
@@ -277,10 +272,11 @@ func (a *App) renderStrategySelectionContent(title string, includeBack bool) str
 		}
 	}
 
+	// Instructions reflect dynamic option count; we support 1-9 via number keys or Enter on highlighted when help is open
 	if includeBack {
-		list += "\nPress 1-4 to select, h for help, b to go back, q to quit\n"
+		list += "\nPress 1-9 (or Enter when highlighted) to select, h for help, b to go back, q to quit\n"
 	} else {
-		list += "\nPress 1-4 to select, h for help, q to quit\n"
+		list += "\nPress 1-9 (or Enter when highlighted) to select, h for help, q to quit\n"
 	}
 
 	if a.helpOpen {
