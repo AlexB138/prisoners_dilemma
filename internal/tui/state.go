@@ -3,7 +3,8 @@ package tui
 type appState int
 
 const (
-	stateStrategy1 appState = iota
+	stateNone appState = iota
+	stateStrategy1
 	stateStrategy2
 	stateRounds
 	stateIterativeType
@@ -33,6 +34,9 @@ var stateTransitions = map[appState]transition{
 
 func (a *App) transitionTo(newState appState) {
 	a.state = newState
+	// Reset help UI on state change
+	a.helpOpen = false
+	a.helpIndex = 1
 }
 
 func (a *App) nextState() {
@@ -43,6 +47,9 @@ func (a *App) nextState() {
 
 func (a *App) previousState() {
 	if t, ok := stateTransitions[a.state]; ok {
+		if t.prev == stateNone {
+			return
+		}
 		a.transitionTo(t.prev)
 	}
 }

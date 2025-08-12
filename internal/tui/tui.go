@@ -11,6 +11,10 @@ type App struct {
 	state    appState
 	sim      *simulation.Simulation
 	settings *simulation.Settings
+	// helpOpen indicates whether contextual help is currently displayed
+	helpOpen bool
+	// helpIndex is the 1-based index of the currently highlighted item for help
+	helpIndex int
 }
 
 // simulationCompleteMsg is sent when simulation completes
@@ -26,6 +30,8 @@ func NewApp() *App {
 			Rounds:     10,
 			Iterations: 1,
 		},
+		helpOpen:  false,
+		helpIndex: 1,
 	}
 }
 

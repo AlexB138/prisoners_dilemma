@@ -14,9 +14,9 @@ TODO:
 - Create random ecosystem encounters with global "win"
 - Add more strategies
 - Update renderer to auto discover strategies
-- Update tui with help entries
 - Add detailed result view
 - Make TUI full screen using alternate screen buffer
+- Add Strategy Number to Winner text
 */
 
 func main() {
