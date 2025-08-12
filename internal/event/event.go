@@ -48,7 +48,7 @@ func NewEvent(rounds int, strategy1, strategy2 strategies.Strategy) *Event {
 }
 
 func (e *Event) GetParticipantNames() (string, string) {
-	return e.participant1.strategy.GetName(), e.participant2.strategy.GetName()
+	return e.participant1.strategy.Name(), e.participant2.strategy.Name()
 }
 
 func (e *Event) GetScore() (action.Score, action.Score) {
@@ -93,13 +93,13 @@ func (e *Event) String() string {
 	var n1, n2, output string
 
 	if e.participant1 != nil && e.participant1.strategy != nil {
-		n1 = e.participant1.strategy.GetName()
+		n1 = e.participant1.strategy.Name()
 	} else {
 		return ""
 	}
 
 	if e.participant2 != nil && e.participant2.strategy != nil {
-		n2 = e.participant2.strategy.GetName()
+		n2 = e.participant2.strategy.Name()
 	}
 
 	output = fmt.Sprintf("\t%s\t\t\t\t%s\n", n1, n2)

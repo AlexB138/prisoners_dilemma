@@ -46,11 +46,11 @@ func (s *Simulation) ParticipantNames() (string, string) {
 	var n1, n2 string
 
 	if s.settings.Strategy1 != nil {
-		n1 = s.settings.Strategy1.GetName()
+		n1 = s.settings.Strategy1.Name()
 	}
 
 	if s.settings.Strategy2 != nil {
-		n2 = s.settings.Strategy2.GetName()
+		n2 = s.settings.Strategy2.Name()
 	}
 
 	return n1, n2

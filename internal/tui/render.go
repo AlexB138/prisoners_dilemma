@@ -6,6 +6,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 
 	"github.com/AlexB138/prisoners_dilemma/internal/simulation"
+	"github.com/AlexB138/prisoners_dilemma/internal/strategies"
 )
 
 var boxStyle = lipgloss.NewStyle().
@@ -29,33 +30,14 @@ var stateToRender = map[appState]renderFunc{
 }
 
 func (a *App) renderStrategy1Selection() string {
-	content := `
-Select Strategy 1:
-
-  1. Cooperator (Always Cooperate)
-  2. Defector (Always Defect)
-  3. Random (Random Choice)
-  4. Tit for Tat (Copy Opponent's Last Move)
-
-Press 1-4 to select, q to quit
-`
+	content := a.renderStrategySelectionContent("Select Strategy 1:", false)
 	return boxStyle.Render(content)
 }
 
 func (a *App) renderStrategy2Selection() string {
-	content := fmt.Sprintf(`
-Strategy 1: %s
-
-Select Strategy 2:
-
-  1. Cooperator (Always Cooperate)
-  2. Defector (Always Defect)
-  3. Random (Random Choice)
-  4. Tit for Tat (Copy Opponent's Last Move)
-
-Press 1-4 to select, b to go back, q to quit
-`, a.settings.Strategy1.GetName())
-	return boxStyle.Render(content)
+	header := fmt.Sprintf("Strategy 1: %s\n\n", a.settings.Strategy1.Name())
+	body := a.renderStrategySelectionContent("Select Strategy 2:", true)
+	return boxStyle.Render(header + body)
 }
 
 func (a *App) renderRoundsInput() string {
@@ -66,51 +48,36 @@ Strategy 2: %s
 Number of Rounds: %d
 
 Use ↑/↓ to adjust, Enter to continue, b to go back
-`, a.settings.Strategy1.GetName(), a.settings.Strategy2.GetName(), a.settings.Rounds)
+`, a.settings.Strategy1.Name(), a.settings.Strategy2.Name(), a.settings.Rounds)
 	return boxStyle.Render(content)
 }
 
 func (a *App) renderSimTypeSelection() string {
-	content := fmt.Sprintf(`
-Strategy 1: %s
-Strategy 2: %s
-Rounds: %d
-
-Simulation Type:
-
-  1. Single Event (One match)
-  2. Best of N (Multiple matches, best wins)
-
-Press 1-2 to select, b to go back, q to quit
-`, a.settings.Strategy1.GetName(), a.settings.Strategy2.GetName(), a.settings.Rounds)
+	header := fmt.Sprintf("Strategy 1: %s\nStrategy 2: %s\nRounds: %d\n\nSimulation Type:\n\n", a.settings.Strategy1.Name(), a.settings.Strategy2.Name(), a.settings.Rounds)
+	options := []string{
+		fmt.Sprintf("1. %s", simulation.SingleEvent),
+		fmt.Sprintf("2. %s", simulation.BestOfN),
+	}
+	content := header + renderHelpList(options, a.helpOpen, a.helpIndex) + "\n" + renderSimTypeHelp(a)
+	content += "\nPress 1-2 to select, h for help, b to go back, q to quit"
 	return boxStyle.Render(content)
 }
 
 func (a *App) renderIterativeTypeInput() string {
-	content := fmt.Sprintf(`
-Strategy 1: %s
-Strategy 2: %s
-Rounds: %d
-Sim Type: %s
-
-Select Iterative Scoring Method:
-
-  1. %s
-  2. %s
-  3. %s
-  4. %s
-
-Press 1-4 to select, b to go back, q to quit
-`,
-		a.settings.Strategy1.GetName(),
-		a.settings.Strategy2.GetName(),
+	header := fmt.Sprintf("Strategy 1: %s\nStrategy 2: %s\nRounds: %d\nSim Type: %s\n\nSelect Iterative Scoring Method:\n\n",
+		a.settings.Strategy1.Name(),
+		a.settings.Strategy2.Name(),
 		a.settings.Rounds,
 		a.settings.Type,
-		simulation.IterativeGameTypeMostWins,
-		simulation.IterativeGameTypeHighestTotal,
-		simulation.IterativeGameTypeHighestSingleEvent,
-		simulation.IterativeGameTypeBestAverageScore,
 	)
+	options := []string{
+		fmt.Sprintf("1. %s", simulation.IterativeGameTypeMostWins),
+		fmt.Sprintf("2. %s", simulation.IterativeGameTypeHighestTotal),
+		fmt.Sprintf("3. %s", simulation.IterativeGameTypeHighestSingleEvent),
+		fmt.Sprintf("4. %s", simulation.IterativeGameTypeBestAverageScore),
+	}
+	content := header + renderHelpList(options, a.helpOpen, a.helpIndex) + "\n" + renderIterativeTypeHelp(a)
+	content += "\nPress 1-4 to select, h for help, b to go back, q to quit"
 	return boxStyle.Render(content)
 }
 
@@ -120,15 +87,17 @@ Strategy 1: %s
 Strategy 2: %s
 Rounds: %d
 Sim Type: %s
+Scoring Method: %s
 
 Number of Events: %d
 
 Use ↑/↓ to adjust, Enter to continue, b to go back
 `,
-		a.settings.Strategy1.GetName(),
-		a.settings.Strategy2.GetName(),
+		a.settings.Strategy1.Name(),
+		a.settings.Strategy2.Name(),
 		a.settings.Rounds,
 		a.settings.Type,
+		a.settings.IterativeGameType,
 		a.settings.Iterations,
 	)
 	return boxStyle.Render(content)
@@ -170,7 +139,7 @@ Settings:
 	if winner == nil {
 		winnerText = "Tie!"
 	} else {
-		winnerText = winner.GetName()
+		winnerText = winner.Name()
 	}
 	footer := fmt.Sprintf(`
 
@@ -241,4 +210,91 @@ func (a *App) renderBestAverageScore() (string, string) {
 func (a *App) renderMostWinsScore() (string, string) {
 	wins1, wins2 := a.sim.MostWinsScore()
 	return fmt.Sprintf("%d wins", wins1), fmt.Sprintf("%d wins", wins2)
+}
+
+// --- Shared help rendering utilities ---
+
+func renderHelpList(options []string, helpOpen bool, helpIndex int) string {
+	// Render a simple list with a caret for the help-highlighted item if help is open
+	result := ""
+	for idx, opt := range options {
+		prefix := "  "
+		if helpOpen && (idx+1) == helpIndex {
+			prefix = "> "
+		}
+		result += fmt.Sprintf("%s%s\n", prefix, opt)
+	}
+	return result
+}
+
+func renderSimTypeHelp(a *App) string {
+	if !a.helpOpen {
+		return ""
+	}
+	selected := a.helpIndex
+	var key simulation.Type
+	if selected == 1 {
+		key = simulation.SingleEvent
+	} else {
+		key = simulation.BestOfN
+	}
+	return fmt.Sprintf("\n[Help: %s]\n%s\n", key, simulation.HelpForType(key))
+}
+
+func renderIterativeTypeHelp(a *App) string {
+	if !a.helpOpen {
+		return ""
+	}
+	var key simulation.IterativeGameType
+	switch a.helpIndex {
+	case 1:
+		key = simulation.IterativeGameTypeMostWins
+	case 2:
+		key = simulation.IterativeGameTypeHighestTotal
+	case 3:
+		key = simulation.IterativeGameTypeHighestSingleEvent
+	case 4:
+		key = simulation.IterativeGameTypeBestAverageScore
+	}
+	return fmt.Sprintf("\n[Help: %s]\n%s\n", key, simulation.HelpForIterativeType(key))
+}
+
+func (a *App) renderStrategySelectionContent(title string, includeBack bool) string {
+	options := []strategies.Strategy{
+		strategies.NewCooperator(),
+		strategies.NewDefector(),
+		strategies.NewRandom(),
+		strategies.NewTitForTat(),
+	}
+
+	list := title + "\n\n"
+	for i, s := range options {
+		line := fmt.Sprintf("%d. %s", i+1, s.Name())
+		if a.helpOpen && a.helpIndex == i+1 {
+			list += "> " + line + "\n"
+		} else {
+			list += "  " + line + "\n"
+		}
+	}
+
+	if includeBack {
+		list += "\nPress 1-4 to select, h for help, b to go back, q to quit\n"
+	} else {
+		list += "\nPress 1-4 to select, h for help, q to quit\n"
+	}
+
+	if a.helpOpen {
+		// Show help for the highlighted strategy
+		idx := a.helpIndex - 1
+		if idx < 0 {
+			idx = 0
+		}
+		if idx > len(options)-1 {
+			idx = len(options) - 1
+		}
+		selected := options[idx]
+		list += fmt.Sprintf("\n[Help: %s]\n%s\n", selected.Name(), selected.Description())
+	}
+
+	return list
 }

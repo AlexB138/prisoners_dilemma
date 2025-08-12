@@ -13,7 +13,11 @@ func NewCooperator() Strategy {
 	return &Cooperator{name: "Cooperator"}
 }
 
-func (c *Cooperator) GetName() string {
+func (c *Cooperator) Description() string {
+	return "Cooperates unconditionally."
+}
+
+func (c *Cooperator) Name() string {
 	return c.name
 }
 

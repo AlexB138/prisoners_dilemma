@@ -24,6 +24,20 @@ func (a *App) handleStrategySelection(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	var s strategies.Strategy
 
 	switch msg.String() {
+	case "h", "?":
+		a.helpOpen = !a.helpOpen
+	case "up":
+		if a.helpOpen {
+			if a.helpIndex > 1 {
+				a.helpIndex--
+			}
+		}
+	case "down":
+		if a.helpOpen {
+			if a.helpIndex < 4 {
+				a.helpIndex++
+			}
+		}
 	case "1":
 		s = strategies.NewCooperator()
 	case "2":
@@ -78,6 +92,20 @@ func (a *App) handleRoundsInput(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 func (a *App) handleSimTypeSelection(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
+	case "h", "?":
+		a.helpOpen = !a.helpOpen
+	case "up":
+		if a.helpOpen && a.settings.Type == "" {
+			if a.helpIndex > 1 {
+				a.helpIndex--
+			}
+		}
+	case "down":
+		if a.helpOpen && a.settings.Type == "" {
+			if a.helpIndex < 2 {
+				a.helpIndex++
+			}
+		}
 	case "1":
 		a.settings.Type = simulation.SingleEvent
 		a.settings.Iterations = 1
@@ -95,7 +123,23 @@ func (a *App) handleSimTypeSelection(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 }
 
 func (a *App) handleIterativeTypeSelection(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	a.settings.IterativeGameType = simulation.IterativeGameTypeNone
+
 	switch msg.String() {
+	case "h", "?":
+		a.helpOpen = !a.helpOpen
+	case "up":
+		if a.helpOpen {
+			if a.helpIndex > 1 {
+				a.helpIndex--
+			}
+		}
+	case "down":
+		if a.helpOpen {
+			if a.helpIndex < 4 {
+				a.helpIndex++
+			}
+		}
 	case "1":
 		a.settings.IterativeGameType = simulation.IterativeGameTypeMostWins
 	case "2":
@@ -106,11 +150,15 @@ func (a *App) handleIterativeTypeSelection(msg tea.KeyMsg) (tea.Model, tea.Cmd) 
 		a.settings.IterativeGameType = simulation.IterativeGameTypeBestAverageScore
 	case "b":
 		a.previousState()
+		return a, nil
 	case "q", "ctrl+c":
 		return a, tea.Quit
 	}
 
-	a.nextState()
+	if a.settings.IterativeGameType != simulation.IterativeGameTypeNone {
+		a.nextState()
+	}
+
 	return a, nil
 }
 

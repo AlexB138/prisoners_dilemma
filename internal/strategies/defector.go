@@ -13,7 +13,11 @@ func NewDefector() Strategy {
 	return &Defector{name: "Defector"}
 }
 
-func (d *Defector) GetName() string {
+func (d *Defector) Description() string {
+	return "Defects unconditionally."
+}
+
+func (d *Defector) Name() string {
 	return d.name
 }
 
