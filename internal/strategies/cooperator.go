@@ -6,7 +6,8 @@ import (
 )
 
 type Cooperator struct {
-	name string
+	name           string
+	participantNum round.Participant
 }
 
 func init() { Register(NewCooperator) }
@@ -15,18 +16,28 @@ func NewCooperator() Strategy {
 	return &Cooperator{name: "Cooperator"}
 }
 
-func (c *Cooperator) Description() string {
+func (s *Cooperator) Description() string {
 	return "Cooperates unconditionally."
 }
 
-func (c *Cooperator) Name() string {
-	return c.name
+func (s *Cooperator) Name() string {
+	return s.name
 }
 
-func (c *Cooperator) MakeChoice(_ int) action.Action {
+func (s *Cooperator) MakeChoice(_ int) action.Action {
 	return action.Cooperate
 }
 
-func (c *Cooperator) ReceiveResult(_, _ int, _ round.Round) {}
+func (s *Cooperator) ParticipantNumber() round.Participant {
+	return s.participantNum
+}
 
-func (c *Cooperator) Reset() {}
+func (s *Cooperator) ReceiveResult(roundNum int, participantNum round.Participant, _ round.Round) {
+	if s.participantNum == round.ParticipantNone {
+		s.participantNum = participantNum
+	}
+}
+
+func (s *Cooperator) Reset() {
+	s.participantNum = round.ParticipantNone
+}

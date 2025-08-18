@@ -16,6 +16,7 @@ TODO:
 - Add detailed result view
 - Make TUI full screen using alternate screen buffer
 - Add Strategy Number to Winner text
+- Generalize TFT logic
 */
 
 func main() {
