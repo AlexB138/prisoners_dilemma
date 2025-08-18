@@ -8,7 +8,8 @@ import (
 )
 
 type Random struct {
-	name string
+	name           string
+	participantNum round.Participant
 }
 
 func init() { Register(NewRandom) }
@@ -17,15 +18,15 @@ func NewRandom() Strategy {
 	return &Random{name: "Random"}
 }
 
-func (r *Random) Description() string {
+func (s *Random) Description() string {
 	return "Randomly cooperates or defects with equal likelihood."
 }
 
-func (r *Random) Name() string {
-	return r.name
+func (s *Random) Name() string {
+	return s.name
 }
 
-func (r *Random) MakeChoice(_ int) action.Action {
+func (s *Random) MakeChoice(_ int) action.Action {
 	if rand.Int()%2 == 0 {
 		return action.Cooperate
 	} else {
@@ -33,6 +34,16 @@ func (r *Random) MakeChoice(_ int) action.Action {
 	}
 }
 
-func (r *Random) ReceiveResult(_, _ int, _ round.Round) {}
+func (s *Random) ParticipantNumber() round.Participant {
+	return s.participantNum
+}
 
-func (r *Random) Reset() {}
+func (s *Random) ReceiveResult(roundNum int, participantNum round.Participant, _ round.Round) {
+	if s.participantNum == round.ParticipantNone {
+		s.participantNum = participantNum
+	}
+}
+
+func (s *Random) Reset() {
+	s.participantNum = round.ParticipantNone
+}

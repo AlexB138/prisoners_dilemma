@@ -12,9 +12,22 @@ type Strategy interface {
 	Name() string
 	// MakeChoice returns the action.Action for the round
 	MakeChoice(roundNum int) action.Action
+	// ParticipantNumber returns the participant number of an active or finished strategy. Used for helpers.
+	ParticipantNumber() round.Participant
 	// ReceiveResult sends the round number, an indicator of which participant the Strategy is, and
 	// round.Round containing results back to the Strategy
-	ReceiveResult(roundNum, participantNum int, round round.Round)
+	ReceiveResult(roundNum int, participantNum round.Participant, round round.Round)
 	// Reset reinitializes a strategy. This allows it to participate in multiple events.
 	Reset()
+}
+
+// OpponentParticipantNumber returns the participant number of an opponent in a Simulation. If it is round.ParticipantNone, the Simulation hasn't started.
+func OpponentParticipantNumber(s Strategy) round.Participant {
+	if s.ParticipantNumber() == round.Participant1 {
+		return round.Participant2
+	} else if s.ParticipantNumber() == round.Participant2 {
+		return round.Participant1
+	} else {
+		return round.ParticipantNone
+	}
 }

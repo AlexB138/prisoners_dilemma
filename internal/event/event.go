@@ -68,8 +68,8 @@ func (e *Event) Run() {
 		e.participant2.updateScore(r.Participant2Data)
 
 		// Send results to strategies
-		e.participant1.strategy.ReceiveResult(e.currentRound, 1, *r)
-		e.participant2.strategy.ReceiveResult(e.currentRound, 2, *r)
+		e.participant1.strategy.ReceiveResult(e.currentRound, round.Participant1, *r)
+		e.participant2.strategy.ReceiveResult(e.currentRound, round.Participant2, *r)
 	}
 }
 
@@ -129,4 +129,32 @@ func (e *Event) Winner() strategies.Strategy {
 	} else {
 		return e.participant2.strategy
 	}
+}
+
+// GetParticipant returns the participant for the specified participant number
+func (e *Event) GetParticipant(participantNum round.Participant) (*participant, bool) {
+	switch participantNum {
+	case round.Participant1:
+		return e.participant1, true
+	case round.Participant2:
+		return e.participant2, true
+	default:
+		return nil, false
+	}
+}
+
+// GetParticipantStrategy returns the strategy for the specified participant number
+func (e *Event) GetParticipantStrategy(participantNum round.Participant) (strategies.Strategy, bool) {
+	if p, ok := e.GetParticipant(participantNum); ok {
+		return p.strategy, true
+	}
+	return nil, false
+}
+
+// GetParticipantScore returns the score for the specified participant number
+func (e *Event) GetParticipantScore(participantNum round.Participant) (action.Score, bool) {
+	if p, ok := e.GetParticipant(participantNum); ok {
+		return p.score, true
+	}
+	return 0, false
 }

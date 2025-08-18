@@ -11,7 +11,7 @@ import (
 type GenerousTitForTat struct {
 	history        round.History
 	name           string
-	participantNum int
+	participantNum round.Participant
 }
 
 func init() { Register(NewGenerousTitForTat) }
@@ -26,6 +26,10 @@ func (g *GenerousTitForTat) Description() string {
 
 func (g *GenerousTitForTat) Name() string {
 	return g.name
+}
+
+func (g *GenerousTitForTat) ParticipantNumber() round.Participant {
+	return g.participantNum
 }
 
 func (g *GenerousTitForTat) MakeChoice(roundNum int) action.Action {
@@ -44,7 +48,7 @@ func (g *GenerousTitForTat) MakeChoice(roundNum int) action.Action {
 	return g.chooseDefectResponse()
 }
 
-func (g *GenerousTitForTat) ReceiveResult(roundNum, participantNum int, r round.Round) {
+func (g *GenerousTitForTat) ReceiveResult(roundNum int, participantNum round.Participant, r round.Round) {
 	if g == nil {
 		return
 	}
@@ -53,7 +57,7 @@ func (g *GenerousTitForTat) ReceiveResult(roundNum, participantNum int, r round.
 		g.history = make(round.History)
 	}
 
-	if g.participantNum == 0 {
+	if g.participantNum == round.ParticipantNone {
 		g.participantNum = participantNum
 	}
 
@@ -62,6 +66,7 @@ func (g *GenerousTitForTat) ReceiveResult(roundNum, participantNum int, r round.
 
 func (g *GenerousTitForTat) Reset() {
 	g.history = make(round.History)
+	g.participantNum = round.ParticipantNone
 }
 
 func (g *GenerousTitForTat) getOpponentsPreviousMove(roundNum int) (action.Action, bool) {
@@ -70,11 +75,10 @@ func (g *GenerousTitForTat) getOpponentsPreviousMove(roundNum int) (action.Actio
 	}
 
 	if r, ok := g.history[roundNum-1]; ok {
-		opponentData := r.Participant1Data
-		if g.participantNum == 1 {
-			opponentData = r.Participant2Data
+		opponentData, ok := r.GetOpponentData(g.participantNum)
+		if !ok {
+			return action.Cooperate, false
 		}
-
 		return opponentData.Action, true
 	} else {
 		return action.Cooperate, false
@@ -86,7 +90,7 @@ func (g *GenerousTitForTat) chooseDefectResponse() action.Action {
 		T = Temptation (you defect, opponent cooperates — best personal payoff)
 		R = Reward (mutual cooperation — good but not maximal payoff)
 		P = Punishment (mutual defection — worse than cooperation)
-		S = Sucker’s payoff (you cooperate, opponent defects — worst for you)
+		S = Sucker's payoff (you cooperate, opponent defects — worst for you)
 	*/
 	t := float64(action.Maximum)
 	r := float64(action.Good)
@@ -96,7 +100,7 @@ func (g *GenerousTitForTat) chooseDefectResponse() action.Action {
 	/*
 		temptation: T - R / R - S. Compares the temptation to defect to the loss from being exploited.
 		T - R: The extra gain you get from exploiting someone instead of mutually cooperating.
-		R - S: The “cost” to you of being exploited (cooperating while the other defects).
+		R - S: The "cost" to you of being exploited (cooperating while the other defects).
 
 		Subtracting temptation from 1 gives a forgiveness factor: if temptation is high relative to sucker loss, you
 			forgive less.
@@ -111,7 +115,7 @@ func (g *GenerousTitForTat) chooseDefectResponse() action.Action {
 	*/
 	benevolence := (r - p) / (t - p)
 
-	// The strategy takes the more conservative (lower) probability from the two formulas, ensuring it doesn’t become
+	// The strategy takes the more conservative (lower) probability from the two formulas, ensuring it doesn't become
 	// too forgiving in scenarios where that would be exploited.
 	prob := math.Min(temptation, benevolence)
 	if prob < 0 {

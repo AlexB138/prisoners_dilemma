@@ -8,7 +8,7 @@ import (
 type SuspiciousTitForTat struct {
 	history        round.History
 	name           string
-	participantNum int
+	participantNum round.Participant
 }
 
 func init() { Register(NewSuspiciousTitForTat) }
@@ -25,6 +25,10 @@ func (t *SuspiciousTitForTat) Name() string {
 	return t.name
 }
 
+func (t *SuspiciousTitForTat) ParticipantNumber() round.Participant {
+	return t.participantNum
+}
+
 func (t *SuspiciousTitForTat) MakeChoice(roundNum int) action.Action {
 	opPreviousAction, ok := t.getOpponentsPreviousMove(roundNum)
 	if !ok {
@@ -37,7 +41,7 @@ func (t *SuspiciousTitForTat) MakeChoice(roundNum int) action.Action {
 	return opPreviousAction
 }
 
-func (t *SuspiciousTitForTat) ReceiveResult(roundNum, participantNum int, r round.Round) {
+func (t *SuspiciousTitForTat) ReceiveResult(roundNum int, participantNum round.Participant, r round.Round) {
 	if t == nil {
 		return
 	}
@@ -46,7 +50,7 @@ func (t *SuspiciousTitForTat) ReceiveResult(roundNum, participantNum int, r roun
 		t.history = make(round.History)
 	}
 
-	if t.participantNum == 0 {
+	if t.participantNum == round.ParticipantNone {
 		t.participantNum = participantNum
 	}
 
@@ -55,6 +59,7 @@ func (t *SuspiciousTitForTat) ReceiveResult(roundNum, participantNum int, r roun
 
 func (t *SuspiciousTitForTat) Reset() {
 	t.history = make(round.History)
+	t.participantNum = round.ParticipantNone
 }
 
 func (t *SuspiciousTitForTat) getOpponentsPreviousMove(roundNum int) (action.Action, bool) {
@@ -63,11 +68,10 @@ func (t *SuspiciousTitForTat) getOpponentsPreviousMove(roundNum int) (action.Act
 	}
 
 	if r, ok := t.history[roundNum-1]; ok {
-		opponentData := r.Participant1Data
-		if t.participantNum == 1 {
-			opponentData = r.Participant2Data
+		opponentData, ok := r.GetOpponentData(t.participantNum)
+		if !ok {
+			return action.Defect, false
 		}
-
 		return opponentData.Action, true
 	} else {
 		return action.Defect, false

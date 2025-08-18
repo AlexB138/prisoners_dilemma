@@ -6,7 +6,8 @@ import (
 )
 
 type Defector struct {
-	name string
+	name           string
+	participantNum round.Participant
 }
 
 func init() { Register(NewDefector) }
@@ -15,18 +16,28 @@ func NewDefector() Strategy {
 	return &Defector{name: "Defector"}
 }
 
-func (d *Defector) Description() string {
+func (s *Defector) Description() string {
 	return "Defects unconditionally."
 }
 
-func (d *Defector) Name() string {
-	return d.name
+func (s *Defector) Name() string {
+	return s.name
 }
 
-func (d *Defector) MakeChoice(_ int) action.Action {
+func (s *Defector) MakeChoice(_ int) action.Action {
 	return action.Defect
 }
 
-func (d *Defector) ReceiveResult(_, _ int, _ round.Round) {}
+func (s *Defector) ParticipantNumber() round.Participant {
+	return s.participantNum
+}
 
-func (d *Defector) Reset() {}
+func (s *Defector) ReceiveResult(roundNum int, participantNum round.Participant, _ round.Round) {
+	if s.participantNum == round.ParticipantNone {
+		s.participantNum = participantNum
+	}
+}
+
+func (s *Defector) Reset() {
+	s.participantNum = round.ParticipantNone
+}
