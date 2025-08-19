@@ -17,6 +17,7 @@ TODO:
 - Make TUI full screen using alternate screen buffer
 - Add Strategy Number to Winner text
 - Generalize TFT logic
+- Update history to not be off-by-one index, use round number
 */
 
 func main() {
