@@ -1,35 +1,40 @@
 package strategies
 
 import (
+	"math/rand"
+
 	"github.com/AlexB138/prisoners_dilemma/internal/action"
 	"github.com/AlexB138/prisoners_dilemma/internal/round"
 )
 
-type TitForTat struct {
+type ImperfectTitForTat struct {
 	history        round.History
 	name           string
 	participantNum round.Participant
 }
 
-func init() { Register(NewTitForTat) }
-
-func NewTitForTat() Strategy {
-	return &TitForTat{name: "TitForTat"}
+func init() {
+	Register(NewImperfectTitForTat)
 }
 
-func (s *TitForTat) Description() string {
-	return "Cooperates on the first round and imitates its opponent's previous move thereafter."
+func NewImperfectTitForTat() Strategy {
+	return &ImperfectTitForTat{name: "ImperfectTitForTat"}
 }
 
-func (s *TitForTat) Name() string {
+func (s *ImperfectTitForTat) Description() string {
+	return "Imitates opponent's last move with high (but less than certain) probability."
+}
+
+func (s *ImperfectTitForTat) Name() string {
 	return s.name
 }
 
-func (s *TitForTat) ParticipantNumber() round.Participant {
+func (s *ImperfectTitForTat) ParticipantNumber() round.Participant {
 	return s.participantNum
 }
 
-func (s *TitForTat) MakeChoice(roundNum int) action.Action {
+// MakeChoice returns the opponent's last action.Action with 70% probability, and action.Cooperate or action.Defect with 15% probability each.'
+func (s *ImperfectTitForTat) MakeChoice(roundNum int) action.Action {
 	opPreviousAction, ok := s.getOpponentsPreviousMove(roundNum)
 	if !ok {
 		// If no previous opponent action is present, cooperate.
@@ -37,11 +42,16 @@ func (s *TitForTat) MakeChoice(roundNum int) action.Action {
 		return action.Cooperate
 	}
 
-	// If they previously defected, defect. Vice versa.
-	return opPreviousAction
+	probability := rand.Float64()
+	if probability < 0.7 {
+		return opPreviousAction
+	} else if probability < 0.85 {
+		return action.Cooperate
+	}
+	return action.Defect
 }
 
-func (s *TitForTat) ReceiveResult(roundNum int, participantNum round.Participant, r round.Round) {
+func (s *ImperfectTitForTat) ReceiveResult(roundNum int, participantNum round.Participant, r round.Round) {
 	if s == nil {
 		return
 	}
@@ -57,12 +67,12 @@ func (s *TitForTat) ReceiveResult(roundNum int, participantNum round.Participant
 	s.history[roundNum] = &r
 }
 
-func (s *TitForTat) Reset() {
+func (s *ImperfectTitForTat) Reset() {
 	s.history = make(round.History)
 	s.participantNum = round.ParticipantNone
 }
 
-func (s *TitForTat) getOpponentsPreviousMove(roundNum int) (action.Action, bool) {
+func (s *ImperfectTitForTat) getOpponentsPreviousMove(roundNum int) (action.Action, bool) {
 	if s == nil || s.history == nil {
 		return action.Cooperate, false
 	}

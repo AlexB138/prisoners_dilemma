@@ -7,7 +7,7 @@ import (
 	"github.com/AlexB138/prisoners_dilemma/internal/round"
 )
 
-func TestMakeChoice(t *testing.T) {
+func TestMakeChoice_GradualTitForTat(t *testing.T) {
 	opDefectRound := round.MakeTestRound(action.Cooperate, action.Defect)
 	opDefectHistory := round.MakeTestHistory(opDefectRound)
 
@@ -80,7 +80,7 @@ func TestMakeChoice(t *testing.T) {
 	}
 }
 
-func Test_updateState(t *testing.T) {
+func Test_updateState_GradualTitForTat(t *testing.T) {
 	inputs := []struct {
 		name                       string
 		opPreviousAction           action.Action
@@ -187,5 +187,50 @@ func Test_updateState(t *testing.T) {
 				t.Errorf("Punishing: %t, Expected: %t", gtft.punishing, input.expectedPunishing)
 			}
 		})
+	}
+}
+
+func TestReset_GradualTitForTat(t *testing.T) {
+	r := round.MakeTestRound(action.Cooperate, action.Defect)
+	h := round.MakeTestHistory(r)
+
+	gtft := GradualTitForTat{
+		apologizing:        true,
+		apologyStreak:      1,
+		history:            h,
+		opponentDefections: 4,
+		participantNum:     round.Participant1,
+		punishing:          true,
+		punishmentStreak:   3,
+	}
+
+	gtft.Reset()
+
+	if gtft.apologizing {
+		t.Error("Expected apologizing to be false")
+	}
+
+	if gtft.apologyStreak != 0 {
+		t.Error("Expected apologyStreak to be 0")
+	}
+
+	if len(gtft.history) != 0 {
+		t.Error("Expected history to be empty")
+	}
+
+	if gtft.opponentDefections != 0 {
+		t.Error("Expected opponentDefections to be 0")
+	}
+
+	if gtft.punishing {
+		t.Error("Expected punishing to be false")
+	}
+
+	if gtft.punishmentStreak != 0 {
+		t.Error("Expected punishmentStreak to be 0")
+	}
+
+	if gtft.participantNum != round.ParticipantNone {
+		t.Errorf("Expected participantNum to be %d, got %d", round.ParticipantNone, gtft.participantNum)
 	}
 }

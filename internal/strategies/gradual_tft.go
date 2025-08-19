@@ -83,6 +83,7 @@ func (s *GradualTitForTat) ReceiveResult(roundNum int, participantNum round.Part
 
 func (s *GradualTitForTat) Reset() {
 	s.history = make(round.History)
+	s.apologyStreak = 0
 	s.opponentDefections = 0
 	s.punishmentStreak = 0
 	s.apologizing = false

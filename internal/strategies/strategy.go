@@ -5,6 +5,9 @@ import (
 	"github.com/AlexB138/prisoners_dilemma/internal/round"
 )
 
+// Many strategies are sourced from: https://plato.stanford.edu/entries/prisoner-dilemma/strategy-table.html
+// Another potential source: https://en.wikipedia.org/wiki/The_Evolution_of_Cooperation
+
 type Strategy interface {
 	// Description returns a description of the strategy. Used for Help text.
 	Description() string
